@@ -11,19 +11,19 @@ Mithilfe des hier vorgestellten Skripts sollen der Export und die anschließende
 Zunächst wird im angegebenen Datensicherungsziel ein neues Protokoll erstellt, das im Folgenden mit Informationen zum aktuellen Sicherungsverlauf beschrieben wird. Dabei wird das mitlaufende Protokoll auch in Echtzeit auf der Kommandozeile ausgegeben. 
 
 - **Ausführung der integrierten Exportfunktion von Paperless-ngx**  
-Zum Exportieren vorhandener Datenbankinhalte, Metadaten, Benutzerprofile und -einstellungen etc. bietet Paperless-ngx mit dem „document_exporter” eine eigene Funktion an. Vor der Ausführung dieser Funktion wird zunächst geprüft, ob der Paperless-ngx-Container läuft, da der Export sonst nicht ausgeführt werden kann. Die exportierten Daten werden im Unterverzeichnis `/export` des Paperless-ngx-Verzeichnisses abgelegt. 
+Zum Exportieren vorhandener Datenbankinhalte, Metadaten, Benutzerprofile und -einstellungen etc. bietet Paperless-ngx mit dem `document_exporter` eine eigene Funktion an. Vor der Ausführung dieser Funktion wird zunächst geprüft, ob der Paperless-ngx-Container läuft, da der Export sonst nicht ausgeführt werden kann. Die exportierten Daten werden im Unterverzeichnis `/export` des Paperless-ngx-Verzeichnisses abgelegt. 
 
 - **Sicherung des Exportverzeichnis `/export`**  
 Nach Abschluss des Exports werden die Daten aus dem Ordner `/export` in das lokale Ziel der Datensicherung übertragen.
 
 - **Ausführung der integrierten Exportfunktion (Dump) von PostgreSQL**  
-Zum Exportieren der eigentlichen Datenbankinhalte bietet PostgreSQL mit `pg_dump' eine eigene Funktion an. Dabei werden die zu exportierenden Datenbankinhalte direkt ins lokale Datensicherungsziel übertragen und in einer Datei mit der Dateiendung .sql gespeichert. Vor der Ausführung dieser Funktion wird zunächst geprüft, ob der PostgreSQL Container von Paperless-ngx läuft, da der Export sonst nicht ausgeführt werden kann.
+Zum Exportieren der eigentlichen Datenbankinhalte bietet PostgreSQL mit `pg_dump` eine eigene Funktion an. Dabei werden die zu exportierenden Datenbankinhalte direkt ins lokale Datensicherungsziel übertragen und in einer Datei mit der Dateiendung `.sql` gespeichert. Vor der Ausführung dieser Funktion wird zunächst geprüft, ob der PostgreSQL Container von Paperless-ngx läuft, da der Export sonst nicht ausgeführt werden kann.
  
 - **Sicherung des YAML- bzw. Docker-Compose-Datei**  
-Befindet sich im Hauptverzeichnis von Paperless-ngx eine YAML- bzw. Docker-Compose-Datei, wird diese ins lokale Datensicherungsziel übertragen und als Datei mit der Endung .yaml gespeichert. Befindet sich die Datei an einem anderen Ort, kann im Skript optional der Pfad und der Dateiname angepasst werden. 
+Befindet sich im Hauptverzeichnis von Paperless-ngx eine YAML- bzw. Docker-Compose-Datei, wird diese ins lokale Datensicherungsziel übertragen und als Datei mit der Endung `.yaml` gespeichert. Befindet sich die Datei an einem anderen Ort, kann im Skript optional der Pfad und der Dateiname angepasst werden. 
 
 - **Sicherung des ENV- bzw. Environment-Datei**  
-Befindet sich im Hauptverzeichnis von Paperless-ngx eine ENV-Datei, wird diese ins lokale Datensicherungsziel übertragen und als Datei mit der Endung .env gespeichert. Befindet sich die Datei an einem anderen Ort, kann im Skript optional der Pfad und der Dateiname angepasst werden. 
+Befindet sich im Hauptverzeichnis von Paperless-ngx eine ENV-Datei, wird diese ins lokale Datensicherungsziel übertragen und als Datei mit der Endung `.env` gespeichert. Befindet sich die Datei an einem anderen Ort, kann im Skript optional der Pfad und der Dateiname angepasst werden. 
 
 - **Anpassen der Ordner- und Dateirechte im Sicherungsziel**  
 Abschließend werden die Ordner- und Dateirechte im Datensicherungsziel noch an die im Skript angegebenen Benutzer- und Gruppenrechte angepasst.
