@@ -78,7 +78,7 @@ if [ -d "${backup_dir}" ]; then
     hr="---------------------------------------------------------------------------------------------------------"
 
     # Prüfen, ob das verwendete Skript aktuell ist oder ob ein Update auf GitHub verfügbar ist
-    git_version=$(wget --no-check-certificate --timeout=60 --tries=1 -q -O- "https://raw.githubusercontent.com/toafez/Paperless-ngx-Backup-Script/Paperless-ngx-Backup-Script.sh" | grep ^version | cut -d '"' -f2)		
+    git_version=$(wget --no-check-certificate --timeout=60 --tries=1 -q -O- "https://raw.githubusercontent.com/toafez/Paperless-ngx-Backup-Script/refs/heads/main/Paperless-ngx-Backup-Script.sh" | grep ^version | cut -d '"' -f2)		
     if [ -n "${git_version}" ] && [ -n "${version}" ]; then
         if dpkg --compare-versions ${git_version} gt ${version}; then
             echo "${hr}" | tee -a "${logfile}" | tee -a "${logfile}"
