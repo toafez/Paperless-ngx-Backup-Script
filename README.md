@@ -34,7 +34,7 @@ Mit Hilfe des Kommandozeilenprogramms `curl` kann die Shell-Skript-Datei **Paper
 
 **Download der Shell-Skript-Datei Paperless-ngx-Backup-Script.sh**
 
-	curl -L -O https://raw.githubusercontent.com/toafez/Paperless-ngx-Backup-Script/refs/heads/main/scripts/Paperless-ngx-Backup-Script.sh
+	curl -L -O https://raw.githubusercontent.com/toafez/Paperless-ngx-Backup-Script/refs/heads/main/Paperless-ngx_Backup-Script.sh
 	
 
 Führe anschließend im selben Verzeichnis den folgenden Befehl aus, um der Shell-Skript-Datei **Paperless-ngx-Backup-Script.sh** Ausführungsrechte zu erteilen.
