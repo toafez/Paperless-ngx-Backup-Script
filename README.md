@@ -107,7 +107,7 @@ Die integrierte Exportfunktion von Paperless-ngx wird ausgeführt....
 - Details zur Versionsgeschichte findest du in der Datei [CHANGELOG](CHANGELOG)
 
 ## Hilfe und Diskussion
-- Hilfe und Diskussionen gerne über das UGREEN Forum - DACH Community (Link folgt)
+- Hilfe und Diskussionen gerne über das UGREEN Forum - DACH Community [Paperless-ngx Backup-Script](https://ugreen-forum.de/forum/thread/2184-paperless-ngx-backup-script/)
 
 ## Lizenz
 - MIT License [LICENSE](LICENSE)
