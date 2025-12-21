@@ -1,8 +1,15 @@
 Paperless-ngx Backup-Script Release Notes
 
+Version 1.0-100 vom 21.12.2025
+
+ - Die Variablen username, groupname, paperless_service und postgresql_service wurden entfernt.
+ - Die Variablen für optionale, benutzerspezifische Angaben wurden angepasst.
+ - Um im Nachgang die Verzeichnis- und Dateirechte im Datensicherungsziel anzupassen, wurde die Ermittlung von Benutzer und Gruppe automatisiert.
+ - Um sicherzustellen, dass die Befehle [ document_exporter ] und [ pg_dump ] innerhalb des Paperless-ngx-Verzeichnis ausgeführt werden, wurde ein automatischer Verzeichniswechsel implementiert.
+ - Die Syntax der Befehle [ document_exporter ] und [ pg_dump ] wurde angepasst.
+ - Weitere kleinere Codeanpassungen vorgenommen.  
+
 Version 1.0-000 vom 18.12.2025
 
- - Deutsch
-    - Veröffentlichung von Paperless-ngx Backup-Script
- - English
-    - Release of Paperless-ngx Backup-Script
+ - Veröffentlichung von Paperless-ngx Backup-Script
+

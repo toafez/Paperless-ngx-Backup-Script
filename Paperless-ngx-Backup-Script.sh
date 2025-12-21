@@ -1,6 +1,6 @@
 #!/bin/bash
 # Filename: Paperless-ngx-Backup-Script.sh - coded in utf-8
-version="1.0-000"
+version="1.0-100"
 
 
 #             Backupskript für Paperless-ngx 
@@ -11,21 +11,15 @@ version="1.0-000"
 # Verbindliche, benutzerspezifische Angaben
 # --------------------------------------------------------------
 
-# Angaben zur Benutzer- und Gruppenzugehörigkeit
-username="BENUTZERNAME"
-groupname="admin"
-
 # Angaben zum lokalen Datensicherungsziel
-backup_dir="/PFAD/ZUM/DATENSICHERUNGSZIEL"
+backup_dir="/Pfad/zum/Datensicherungsziel"
 
 # Angaben zu Paperless-ngx
-paperless_dir="/PFAD/ZUM/PAPERLESS-NGX-VERZEICHNIS"
+paperless_dir="/Pfad/zum/Paperless-ngx-Verzeichnis"
 paperless_container="Paperless-ngx"
-paperless_service="webserver"
 
 # Angaben zur PostgreSQL-Datenbank
 postgresql_container="Paperless-ngx-PostgreSQL"
-postgresql_service="db"
 postgresql_user="paperless"
 postgresql_db="paperless"
 
@@ -33,17 +27,17 @@ postgresql_db="paperless"
 # Optionale, benutzerspezifische Angaben
 # --------------------------------------------------------------
 
-# Pfad und Dateiname der Original Paplerless-ngx YAML-Datei (Docker-Compose)
-yamlfile=("${paperless_dir}"/docker-compose.yaml)
+# Pfad und Dateiname der Paplerless-ngx YAML-Datei (Docker-Compose)
+yamlfile="${paperless_dir}/docker-compose.yaml"
 
-# Pfad und Dateiname der Original Paperless-ngx ENV-Datei (Environment-Attribute)
-envfile=("${paperless_dir}"/*.env)
+# Pfad und Dateiname der Paperless-ngx ENV-Datei (Environment-Attribute)
+envfile="${paperless_dir}/paperless.env"
 
-# Pfad und Dateiname der PostgreSQL Dump-Backup-Datei 
-dumpfile=("${backup_dir}"/postgres-dump.sql)
+# Pfad und Dateiname des zu sichernden PostgreSQL-Dumps
+dumpfile="${backup_dir}/postgres-dump.sql"
 
 # Pfad und Dateiname der Protokolldatei
-logfile=("${backup_dir}"/backup-protocol.log)
+logfile="${backup_dir}/backup-protocol.log"
 
 # --------------------------------------------------------------
 # Rock ’n’ Roll...
@@ -55,17 +49,24 @@ set -e
 # Rückgabewert auf den ersten fehlerhaften Befehl innerhalb der Pipeline setzen
 set -o pipefail
 
+# Variable für den Verzeichnisvergleich zurücksetzen
+identical_dir=
+
+# Absoluten Pfad des Shell-Skripts ermitteln
+script_dir="$(dirname "$(readlink -fn "$0")")"
+
 # Falls noch nicht vorhanden, Datensicherungsziel erstellen
 [ ! -d "${backup_dir}" ] &&  mkdir -p "${backup_dir}"
 
+# Falls das Datensicherungsziel exisitiert...
 if [ -d "${backup_dir}" ]; then
 
-    # Aktuelles Datum
+    # Funktion: Aktuelles Datum ermitteln
     datestamp() {
         date +"%d.%m.%Y"
     }
 
-    # Aktuelle Uhrzeit
+    # Funktion: Aktuelle Uhrzeit ermitteln
     timestamp() {
         date +"%H:%M:%S"
     }
@@ -91,51 +92,87 @@ if [ -d "${backup_dir}" ]; then
         fi
     fi
 
-    echo "${hr}" | tee -a "${logfile}"
-    echo "Paperless-ngx Datensicherungsprotokoll vom $(datestamp) um $(timestamp) Uhr" | tee -a "${logfile}"
-    echo " - Datensicherungsziel: ${backup_dir}" | tee -a "${logfile}"
-    echo "${hr}" | tee -a "${logfile}"
-    echo "" | tee -a "${logfile}"
+    # Wenn das Hauptverzeichnis von Paperless-ngx existiert...
+    if [ -d "${paperless_dir}" ]; then
 
-    if [ -d ${paperless_dir} ]; then
+        # Prüfen, welchem Benutzer das Verzeichnis gehört
+        dir_user=$(stat -c '%U' "${paperless_dir}")
+
+        # Prüfen, welcher Gruppe dieses Verzeichnis gehört
+        dir_group=$(stat -c '%G' "${paperless_dir}")
+
+        # Funktion: Wechsle ins Hauptverzeichnis von Paperless-ngx
+        change_to_paperless_dir() {
+            if [[ "${script_dir}" == "${paperless_dir}" ]]; then
+                identical_dir="true"
+            else
+                identical_dir="false"
+                cd "${paperless_dir}"
+            fi
+        }
+
+        # Funktion: Wechsle zurück ins Skriptverzeichnis
+        change_to_current_dir() {
+            if [[ "${identical_dir}" == "false" ]]; then
+                identical_dir=
+                cd "${current_dir}"
+            fi
+        }
+
+        echo "${hr}" | tee -a "${logfile}"
+        echo "Paperless-ngx Datensicherungsprotokoll vom $(datestamp) um $(timestamp) Uhr" | tee -a "${logfile}"
+        echo " - Datensicherungsziel: ${backup_dir}" | tee -a "${logfile}"
+        echo "${hr}" | tee -a "${logfile}"
+        echo "" | tee -a "${logfile}"
 
         # Prüfen, ob der Paperless-ngx-Container läuft
         if [[ $(docker inspect -f '{{.State.Running}}' ${paperless_container} 2>/dev/null) ]]; then
 
+            # Wechsle ins Hauptverzeichnis von Paperless-ngx
+            change_to_paperless_dir
+
+            # Sichern aller Dokumente in das Paperless-NGX-Exportverzeichnis (-d entfernt zwischenzeitlich gelöschte Dateien aus dem Exportverzeichnis)
             echo "Die integrierte Exportfunktion von Paperless-ngx wird ausgeführt...." | tee -a "${logfile}"
+            docker exec "${paperless_container}" document_exporter ../export -d
 
-            # Sichern aller Dokumente in den Paperless-NGX-Exportordner (-d entfernt zwischenzeitlich gelöschte Dateien aus dem Exportordner)
-            docker compose -f "${yamlfile}" exec -T "${paperless_service}" document_exporter ../export -d
+            # Wechsle zurück ins Skriptverzeichnis
+            change_to_current_dir
 
-            # Prüfen, ob Dokumente im Paperless-NGX-Exportordner vorhanden sind
+            # Prüfen, ob Dokumente im Paperless-NGX-Exportverzeichnis vorhanden sind
             if [ -n "$(ls -A ${paperless_dir}/export)" ]; then
 
-                # Sichern aller exportierten Dokumente aus dem Paperless-NGX-Exportordner ins Datensicherungsziel
+                # Sichern aller exportierten Dokumente aus dem Paperless-NGX-Exportverzeichnis ins Datensicherungsziel
                 rsync -a --delete ${paperless_dir}/export ${backup_dir}
 
                 # Prüfen, ob Dokumente im Datensicherungsziel vorhanden sind
                 if [ -d "${backup_dir}/export" ]; then
-                    echo " - Der Paperless-NGX-Exportordner wurde gesichert." | tee -a "${logfile}"
+                    echo " - Das Paperless-NGX-Exportverzeichnis [ /export ] wurde gesichert." | tee -a "${logfile}"
                 else
-                    echo " - Die Sicherung des Paperless-NGX-Exportordners war nicht möglich." | tee -a "${logfile}"
+                    echo " - Die Sicherung des Paperless-NGX-Exportverzeichnises war nicht möglich." | tee -a "${logfile}"
                 fi
             else
-                echo " - Die Bereitstellung der Dokumente im Paperless-NGX-Exportordner war nicht möglich." | tee -a "${logfile}"
+                echo " - Die Bereitstellung der Dokumente im Paperless-NGX-Exportverzeichnis war nicht möglich." | tee -a "${logfile}"
             fi
         else
-            echo " - Die Sicherung des Paperless-NGX-Exportordners kann nicht durchgeführt werden, da der  " | tee -a "${logfile}"
+            echo " - Die Sicherung des Paperless-NGX-Exportverzeichnises kann nicht durchgeführt werden, da der  " | tee -a "${logfile}"
             echo "   entsprechende [ ${paperless_container} ] Container aktuell nicht ausgeführt wird!" | tee -a "${logfile}"
         fi
 
         # Prüfen, ob der PostgreSQL-Container läuft
         if [[ $(docker inspect -f '{{.State.Running}}' ${postgresql_container} 2>/dev/null) ]]; then
 
+            # Wechsle ins Hauptverzeichnis von Paperless-ngx
+            change_to_paperless_dir
+
             # Sichern der PostgreSQL-Datenbank im Datensicherungsziel
-            docker compose -f "${yamlfile}" exec -T "${postgresql_service}" pg_dump -U "${postgresql_user}" -d "${postgresql_db}" > "${dumpfile}"
+            docker exec "${postgresql_container}" pg_dump -U "${postgresql_user}" -d "${postgresql_db}" > "${dumpfile}"
+
+            # Wechsle zurück ins Skriptverzeichnis
+            change_to_current_dir
 
             # Prüfen, ob die Sicherung PostgreSQL-Datenbank erfolgreich war
             if [ -f "${dumpfile}" ] || [ -s "${dumpfile}" ]; then
-                echo " - Die PostgreSQL-Datenbank wurde gesichert." | tee -a "${logfile}"
+                echo " - Die PostgreSQL-Datenbank wurde in der Datei [ ${dumpfile##*/} ] gesichert." | tee -a "${logfile}"
             else
                 echo " - Die Sicherung der PostgreSQL-Datenbank war nicht möglich." | tee -a "${logfile}"
             fi
@@ -149,13 +186,12 @@ if [ -d "${backup_dir}" ]; then
 
             # Sichern der YAML-Datei
             rsync -a --delete "${yamlfile}" "${backup_dir}/"
-            backup_yamlfile=("${backup_dir}"/*.yaml)
             
             # Prüfen, ob die YAML-Datei im Datensicherungsziel angekommen ist
-            if [ -f "${backup_yamlfile}" ] || [ -s "${backup_yamlfile}" ]; then
-                echo " - Die YAML-Datei wurde gesichert." | tee -a "${logfile}"
+            if [ -f "${backup_dir}/${yamlfile##*/}" ] || [ -s "${backup_dir}/${yamlfile##*/}" ]; then
+                echo " - Die YAML-Datei [ ${yamlfile##*/} ] wurde gesichert." | tee -a "${logfile}"
             else
-                echo " - Die Sicherung der YAML-Datei konnte nicht durchgeführt werden." | tee -a "${logfile}"
+                echo " - Die Sicherung der YAML-Datei [ ${yamlfile##*/} ] konnte nicht durchgeführt werden." | tee -a "${logfile}"
             fi
         fi
 
@@ -164,19 +200,18 @@ if [ -d "${backup_dir}" ]; then
 
             # Sichern der ENV-Datei
             rsync -a --delete "${envfile}" "${backup_dir}/"
-            backup_envfile=("${backup_dir}"/*.env)
             
             # Prüfen, ob die ENV-Datei im Datensicherungsziel angekommen ist
-            if [ -f "${backup_envfile}" ] || [ -s "${backup_envfile}" ]; then
-                echo " - Die ENV-Datei wurde gesichert." | tee -a "${logfile}"
+            if [ -f "${backup_dir}/${envfile##*/}" ] || [ -s "${backup_dir}/${envfile##*/}" ]; then
+                echo " - Die ENV-Datei [ ${envfile##*/} ] wurde gesichert." | tee -a "${logfile}"
             else
-                echo " - Die Sicherung der ENV-Datei konnte nicht durchgeführt werden." | tee -a "${logfile}"
+                echo " - Die Sicherung der ENV-Datei [ ${envfile##*/} ] konnte nicht durchgeführt werden." | tee -a "${logfile}"
             fi
         fi
 
         # Passe Ordner- und Dateireche im Sicherungsziel an
-        chown -R ${username}:${groupname} ${backup_dir}
-        echo " - Die Ordner- und Dateirechte im Sicherungsziel wurden auf [ ${username}:${groupname} ] gesetzt." | tee -a "${logfile}"
+        chown -R ${dir_user}:${dir_group} ${backup_dir}
+        echo " - Die Ordner- und Dateirechte im Datensicherungsziel wurden auf [ ${dir_user}:${dir_group} ] gesetzt." | tee -a "${logfile}"
         echo "" | tee -a "${logfile}"
         echo "${hr}" | tee -a "${logfile}"
     else

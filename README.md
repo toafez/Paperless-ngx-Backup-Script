@@ -20,13 +20,13 @@ Nach Abschluss des Exports werden die Daten aus dem Ordner `/export` in das loka
 Zum Exportieren der eigentlichen Datenbankinhalte bietet PostgreSQL mit `pg_dump` eine eigene Funktion an. Dabei werden die zu exportierenden Datenbankinhalte direkt ins lokale Datensicherungsziel übertragen und in einer Datei mit der Dateiendung `.sql` gespeichert. Vor der Ausführung dieser Funktion wird zunächst geprüft, ob der PostgreSQL Container von Paperless-ngx läuft, da der Export sonst nicht ausgeführt werden kann.
  
 - **Sicherung des YAML- bzw. Docker-Compose-Datei**  
-Befindet sich im Hauptverzeichnis von Paperless-ngx eine YAML- bzw. Docker-Compose-Datei, wird diese ins lokale Datensicherungsziel übertragen und als Datei mit der Endung `.yaml` gespeichert. Befindet sich die Datei an einem anderen Ort, kann im Skript optional der Pfad und der Dateiname angepasst werden. 
+Befindet sich im angegebenen Verzeichnis des Shell-Skripts eine YAML- bzw. Docker-Compose-Datei, wird diese ins lokale Datensicherungsziel übertragen und als Datei mit der Endung `.yaml` gespeichert. Befindet sich die Datei an einem anderen Ort, kann im Skript optional der Pfad und der Dateiname angepasst werden. 
 
 - **Sicherung des ENV- bzw. Environment-Datei**  
-Befindet sich im Hauptverzeichnis von Paperless-ngx eine ENV-Datei, wird diese ins lokale Datensicherungsziel übertragen und als Datei mit der Endung `.env` gespeichert. Befindet sich die Datei an einem anderen Ort, kann im Skript optional der Pfad und der Dateiname angepasst werden. 
+Befindet sich im angegebenen Verzeichnis des Shell-Skripts eine ENV-Datei, wird diese ins lokale Datensicherungsziel übertragen und als Datei mit der Endung `.env` gespeichert. Befindet sich die Datei an einem anderen Ort, kann im Skript optional der Pfad und der Dateiname angepasst werden. 
 
 - **Anpassen der Ordner- und Dateirechte im Sicherungsziel**  
-Abschließend werden die Ordner- und Dateirechte im Datensicherungsziel noch an die im Skript angegebenen Benutzer- und Gruppenrechte angepasst.
+Abschließend werden die Ordner- und Dateirechte im Datensicherungsziel noch an die angegebenen Benutzer- und Gruppenrechte des Paperless-ngx-Verzeichnisses angepasst.
 
 
 ## Installationshinweise
