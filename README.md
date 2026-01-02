@@ -28,6 +28,8 @@ Befindet sich im angegebenen Verzeichnis des Shell-Skripts eine ENV-Datei, wird 
 - **Anpassen der Ordner- und Dateirechte im Sicherungsziel**  
 Abschließend werden die Ordner- und Dateirechte im Datensicherungsziel noch an die angegebenen Benutzer- und Gruppenrechte des Paperless-ngx-Verzeichnisses angepasst.
 
+- **Erstellen einer gepackten .tgz Archivdatei (Bei Bedarf)**  
+Nachdem alle o.a. Sicherungen durchgeführt wurden, wird bei Bedarf eine gepackte .tgz-Archivdatei, benannt nach dem aktuellen Datum und der Uhrzeit in einem Unterverzeichnis des Datensicherungsziels abgelegt. Ältere Archivdateien bzw. Versionsstände werden aus dem Unterverzeichnis gelöscht, sobald eine angegebene Zeit in Tagen überschritten wurde.
 
 ## Installationshinweise
 Mit Hilfe des Kommandozeilenprogramms `curl` kann die Shell-Skript-Datei **Paperless-ngx-Backup-Script.sh** einfach über ein Terminalprogramm deiner Wahl heruntergeladen werden. Als Speicherort bietet sich das eigene Benutzer-Home-Verzeichnis an, es kann jedoch auch jedes andere erreichbare Verzeichnis verwendet werden. Wechsle in das von dir gewählte Verzeichnis. Führe dann den folgenden Befehl aus. Damit wird die Skriptdatei in das ausgewählte Verzeichnis heruntergeladen.

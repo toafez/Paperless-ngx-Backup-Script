@@ -1,5 +1,12 @@
 Paperless-ngx Backup-Script Release Notes
 
+Version 1.0-200 vom 02.01.2026
+ - Im Abschnitt "Verbindliche, benutzerspezifische Angaben" des Skriptes, wurde die Variable version_history hinzugefügt.
+ - Im Abschnitt "Optionale, benutzerspezifische Angaben" des Skriptes, wurde die Variable tarfolder hinzugefügt.
+ - Nachdem alle Sicherungen durchgeführt wurden, wird bei Bedarf eine gepackte .tgz-Archivdatei, benannt nach dem aktuellen Datum und der Uhrzeit im Unterverzeichnis (tarfolder) des Datensicherungsziels abgelegt.
+ - Ältere Archivdateien bzw. Versionsstände werden aus dem Unterverzeichnis gelöscht, sobald eine angegebene Zeit in Tagen (version_history) überschritten wurde.
+
+
 Version 1.0-100 vom 21.12.2025
 
  - Die Variablen username, groupname, paperless_service und postgresql_service wurden entfernt.
@@ -8,6 +15,7 @@ Version 1.0-100 vom 21.12.2025
  - Um sicherzustellen, dass die Befehle [ document_exporter ] und [ pg_dump ] innerhalb des Paperless-ngx-Verzeichnis ausgeführt werden, wurde ein automatischer Verzeichniswechsel implementiert.
  - Die Syntax der Befehle [ document_exporter ] und [ pg_dump ] wurde angepasst.
  - Weitere kleinere Codeanpassungen vorgenommen.  
+
 
 Version 1.0-000 vom 18.12.2025
 

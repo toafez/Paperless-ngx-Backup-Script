@@ -1,10 +1,10 @@
 #!/bin/bash
 # Filename: Paperless-ngx-Backup-Script.sh - coded in utf-8
-version="1.0-100"
+version="1.0-200"
 
 
 #             Backupskript für Paperless-ngx 
-#    Copyright (C) 2025 by tommes (toafez) | MIT License
+#    Copyright (C) 2026 by tommes (toafez) | MIT License
 
 
 # --------------------------------------------------------------
@@ -13,6 +13,11 @@ version="1.0-100"
 
 # Angaben zum lokalen Datensicherungsziel
 backup_dir="/Pfad/zum/Datensicherungsziel"
+
+# Angabe einer Zeit in Tagen, wie lange eine gepackte .tgz 
+# Version behalten werden soll, bevor sie gelöscht wird. Der 
+# Wert 0 bedeutet, dass keine Versionsgeschichte erstellt wird.
+version_history="0"
 
 # Angaben zu Paperless-ngx
 paperless_dir="/Pfad/zum/Paperless-ngx-Verzeichnis"
@@ -39,6 +44,9 @@ dumpfile="${backup_dir}/postgres-dump.sql"
 # Pfad und Dateiname der Protokolldatei
 logfile="${backup_dir}/backup-protocol.log"
 
+# Pfad zur Versionsgeschichte
+tarfolder="${backup_dir}/history"
+
 # --------------------------------------------------------------
 # Rock ’n’ Roll...
 # --------------------------------------------------------------
@@ -56,7 +64,14 @@ identical_dir=
 script_dir="$(dirname "$(readlink -fn "$0")")"
 
 # Falls noch nicht vorhanden, Datensicherungsziel erstellen
-[ ! -d "${backup_dir}" ] &&  mkdir -p "${backup_dir}"
+[ ! -d "${backup_dir}" ] && mkdir -p "${backup_dir}"
+
+# Falls noch nicht vorhanden und ${version_history} nicht leer oder 0 ist, Verzeichnis für die Versionsgeschichte erstellen
+if [ ! -z "${version_history}" ] && [[ "${version_history}" =~ ^[0-9]+$ ]]; then
+    if [ "${version_history}" -gt 0 ]; then
+        [ ! -d "${tarfolder}" ] && mkdir -p "${tarfolder}"
+    fi
+fi
 
 # Falls das Datensicherungsziel exisitiert...
 if [ -d "${backup_dir}" ]; then
@@ -132,7 +147,7 @@ if [ -d "${backup_dir}" ]; then
             change_to_paperless_dir
 
             # Sichern aller Dokumente in das Paperless-NGX-Exportverzeichnis (-d entfernt zwischenzeitlich gelöschte Dateien aus dem Exportverzeichnis)
-            echo "Die integrierte Exportfunktion von Paperless-ngx wird ausgeführt...." | tee -a "${logfile}"
+            echo "Die integrierte Exportfunktion von Paperless-ngx wird ausgeführt. Bitte warten..." | tee -a "${logfile}"
             docker exec "${paperless_container}" document_exporter ../export -d
 
             # Wechsle zurück ins Skriptverzeichnis
@@ -212,8 +227,26 @@ if [ -d "${backup_dir}" ]; then
         # Passe Ordner- und Dateireche im Sicherungsziel an
         chown -R ${dir_user}:${dir_group} ${backup_dir}
         echo " - Die Ordner- und Dateirechte im Datensicherungsziel wurden auf [ ${dir_user}:${dir_group} ] gesetzt." | tee -a "${logfile}"
+
+        # Prüfe, ob eine Versionsgeschichte erstellt werden soll.
+        if [ ! -z "${version_history}" ] && [[ "${version_history}" =~ ^[0-9]+$ ]]; then
+            if [ "${version_history}" -gt 0 ]; then
+                if [ -d "${tarfolder}" ]; then
+                    # Packe mit tar alle Inhalte der aktuellen Sicherung in eine .tgz Datei.
+                    echo " - Es wird eine gepackte Sicherungskopie im Unterverzeichnis [ ./${tarfolder##*/} ] abgelegt. Bitte warten..." | tee -a "${logfile}"
+                    tar --exclude="./${tarfolder##*/}" -czf "${tarfolder}/$(date +'%Y-%m-%d_%H-%M-%S')_${paperless_container}.tgz" -C "${backup_dir}" .
+
+                    # Lösche Versionsstände, die älter als x Tage sind.
+                    echo " - Versionsstände, die älter als [ ${version_history} ] Tag(e) sind, werden gelöscht." | tee -a "${logfile}"
+                    find "${tarfolder}" -name "*.tgz" -mtime +"${version_history}" -exec rm {} \;
+                else
+                    echo " - Das Anlegen einer gepackten Sicherungskopie konnte nicht durchgeführt werden." | tee -a "${logfile}"
+                fi
+            fi
+        fi
         echo "" | tee -a "${logfile}"
         echo "${hr}" | tee -a "${logfile}"
+
     else
         echo " - Das Paperless-ngx Verzeichnis oder die Docker-Compose Datei wurde nicht gefunden." | tee -a "${logfile}"
         echo "" | tee -a "${logfile}"
