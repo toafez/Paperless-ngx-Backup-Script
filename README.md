@@ -91,16 +91,18 @@ Ausführung des Skripts jeden Montag und Freitag um 6:00 Uhr
 Nachfolgend ist eine beispielhafte Protokollausgabe auf der Kommandozeile zu sehen, die entsteht, nachdem das Skript ausgeführt wurde. 
 ```
 ---------------------------------------------------------------------------------------------------------
-Paperless-ngx Datensicherungsprotokoll vom 18.12.2025 um 06:00:00 Uhr
+Paperless-ngx Datensicherungsprotokoll vom 02.01.2026 um 21:00:00 Uhr
  - Datensicherungsziel: /volume2/Datensicherung/Paperless-ngx
 ---------------------------------------------------------------------------------------------------------
 
-Die integrierte Exportfunktion von Paperless-ngx wird ausgeführt....
-100%|██████████| 2117/2117 [00:02<00:00, 739.84it/s]
- - Der Paperless-NGX-Exportordner wurde gesichert.
- - Die PostgreSQL-Datenbank wurde gesichert.
- - Die YAML-Datei wurde gesichert.
- - Die Ordner- und Dateirechte im Sicherungsziel wurden auf [ tommes:admin ] gesetzt.
+Die integrierte Exportfunktion von Paperless-ngx wird ausgeführt. Bitte warten...
+100%|██████████| 2119/2119 [00:02<00:00, 740.58it/s]
+ - Das Paperless-NGX-Exportverzeichnis [ /export ] wurde gesichert.
+ - Die PostgreSQL-Datenbank wurde in der Datei [ postgres-dump.sql ] gesichert.
+ - Die YAML-Datei [ docker-compose.yaml ] wurde gesichert.
+ - Die Ordner- und Dateirechte im Datensicherungsziel wurden auf [ tommes:admin ] gesetzt.
+ - Es wird eine gepackte Sicherungskopie im Unterverzeichnis [ ./history ] abgelegt. Bitte warten...
+ - Versionsstände, die älter als [ 30 ] Tag(e) sind, werden gelöscht.
 
 ---------------------------------------------------------------------------------------------------------
 ```
