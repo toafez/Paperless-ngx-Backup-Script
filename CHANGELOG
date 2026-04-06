@@ -1,5 +1,10 @@
 Paperless-ngx Backup-Script Release Notes
 
+Version 1.0-300 vom 06.04.2026
+ - Im Skript wurde die Ausgabe von Informationen auf dem Bildschirm und im Protokoll umgestellt. 
+ - Es wird eine Fehlermeldung ausgegeben, wenn die YAML- oder die ENV-Datei nicht gefunden wird.
+
+
 Version 1.0-200 vom 02.01.2026
  - Im Abschnitt "Verbindliche, benutzerspezifische Angaben" des Skriptes, wurde die Variable version_history hinzugefügt.
  - Im Abschnitt "Optionale, benutzerspezifische Angaben" des Skriptes, wurde die Variable tarfolder hinzugefügt.
