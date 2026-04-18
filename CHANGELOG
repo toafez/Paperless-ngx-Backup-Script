@@ -1,5 +1,26 @@
 Paperless-ngx Backup-Script Release Notes
 
+Version 1.0-400 vom 18.04.2026
+ - Das Skript wurde komplett überarbeitet. 
+ - Alle verbindlichen, benutzerspezifischen Angaben bzw. Variablen müssen daher neu festgelegt werden.
+ - Alle optionalen, benutzerspezifische Angaben bzw. Variablen wurden vollständig entfernt.
+ - Docker-Container werden primär über ihren Servicenamen identifiziert und angesprochen, alternativ über den Containernamen oder die Container-ID.
+ - Welche Docker-Befehle verwendet werden, hängt davon ab, wie ein Docker-Container identifiziert wurde.
+   - Bei Angabe des Servicenamens wird [ docker compose exec -T ] verwendet.
+   - Bei Angabe des Containernamen bzw. der Container-ID wird [ docker exec -T ] verwendet.
+   - Werden sowohl Servicename als auch Containername bzw. Container-ID angegeben, wird der Servicename und damit [ docker compose exec -T ] bevorzugt verwendet. 
+   - Der Benutzer kann somit den zu verwendenden Docker-Befehl beeinflussen, indem er entweder den Servicenamen oder den Containernamen bzw. die Container-ID angibt. 
+   - Damit TTY-Fehler in automatisierten, nicht-interaktiven Aufrufen verhindert werden, wurde den Docker-Befehlen das -T Flag hinzugefügt.
+ - Dem Paperless-Export-Aufruf wurde das Flag -b hinzugefügt, um alle Dateien aus dem Exportverzeichnis zu löschen, die in Paperless-ngx nicht mehr vorhanden sind.
+ - Dem Paperless-Export-Aufruf wurde das Flag -p hinzugefügt, um die exportierten Dateien in die entsprechenden Unterordner /archive, /originals und /thumbnails einzusortieren.
+ - Dem Paperless-Export-Aufruf wurde das Flag -z hinzugefügt, um die exportieren Dateien in einer ZIP-Datei nach der Syntax export-YYYY-MM-DD.zip zu archivieren.
+ - Das Skript durchsucht das Wurzelverzeichnis des Docker-Projekt-Verzeichnisses von Paperless-ngx nach allen Dateien mit den Endungen .yaml und .env und sichert sie.
+ - Wird eine Datensicherung mit Versionsständen verwendet, werden im Datensicherungsziel Versionsordner im Format "YYYY-MM-DDTHH-MM-SS" angelegt.
+ - Versionsordner werden nach Ablauf einer vom Benutzer festgelegten Zeit in Tagen automatisch aus dem Datensicherungsziel gelöscht.
+ - Das Datensicherungsprotokoll wird immer im eigentlichen Wurzelverzeichnis des Datensicherungsziels abgelegt und bei jedem neuen Durchlauf überschrieben.
+ - Weitere Stilverbesserungen und Codeoptimierungen vorgenommen.
+
+
 Version 1.0-300 vom 06.04.2026
  - Im Skript wurde die Ausgabe von Informationen auf dem Bildschirm und im Protokoll umgestellt. 
  - Es wird eine Fehlermeldung ausgegeben, wenn die YAML- oder die ENV-Datei nicht gefunden wird.

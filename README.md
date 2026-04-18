@@ -11,7 +11,7 @@ Mithilfe des hier vorgestellten Skripts sollen der Export und die anschließende
 Zunächst wird im angegebenen Datensicherungsziel ein neues Protokoll erstellt, das im Folgenden mit Informationen zum aktuellen Sicherungsverlauf beschrieben wird. Dabei wird das mitlaufende Protokoll auch in Echtzeit auf der Kommandozeile ausgegeben. 
 
 - **Ausführung der integrierten Exportfunktion von Paperless-ngx**  
-Zum Exportieren vorhandener Datenbankinhalte, Metadaten, Benutzerprofile und -einstellungen etc. bietet Paperless-ngx mit dem `document_exporter` eine eigene Funktion an. Vor der Ausführung dieser Funktion wird zunächst geprüft, ob der Paperless-ngx-Container läuft, da der Export sonst nicht ausgeführt werden kann. Die exportierten Daten werden im Unterverzeichnis `/export` des Paperless-ngx-Verzeichnisses abgelegt. 
+Zum Exportieren vorhandener Datenbankinhalte, Metadaten, Benutzerprofile und -einstellungen etc. bietet Paperless-ngx mit dem `document_exporter` eine eigene Funktion an. Vor der Ausführung dieser Funktion wird zunächst geprüft, ob der Paperless-ngx-Container läuft, da der Export sonst nicht ausgeführt werden kann. Die exportierten Daten werden im Unterverzeichnis `/export` des Paperless-ngx-Verzeichnisses in einer ZIP-Datei mit der Syntax `export-YYYY-MM-DD.zip` abgelegt. 
 
 - **Sicherung des Exportverzeichnis `/export`**  
 Nach Abschluss des Exports werden die Daten aus dem Ordner `/export` in das lokale Ziel der Datensicherung übertragen.
@@ -20,16 +20,16 @@ Nach Abschluss des Exports werden die Daten aus dem Ordner `/export` in das loka
 Zum Exportieren der eigentlichen Datenbankinhalte bietet PostgreSQL mit `pg_dump` eine eigene Funktion an. Dabei werden die zu exportierenden Datenbankinhalte direkt ins lokale Datensicherungsziel übertragen und in einer Datei mit der Dateiendung `.sql` gespeichert. Vor der Ausführung dieser Funktion wird zunächst geprüft, ob der PostgreSQL Container von Paperless-ngx läuft, da der Export sonst nicht ausgeführt werden kann.
  
 - **Sicherung des YAML- bzw. Docker-Compose-Datei**  
-Befindet sich im angegebenen Verzeichnis des Shell-Skripts eine YAML- bzw. Docker-Compose-Datei, wird diese ins lokale Datensicherungsziel übertragen und als Datei mit der Endung `.yaml` gespeichert. Befindet sich die Datei an einem anderen Ort, kann im Skript optional der Pfad und der Dateiname angepasst werden. 
+Befindet sich im Docker-Projekt-Verzeichnis von Paperless-ngx eine YAML- bzw. Docker-Compose-Datei, wird diese ins lokale Datensicherungsziel übertragen und als Datei mit der Endung `.yaml` gespeichert. 
 
 - **Sicherung des ENV- bzw. Environment-Datei**  
-Befindet sich im angegebenen Verzeichnis des Shell-Skripts eine ENV-Datei, wird diese ins lokale Datensicherungsziel übertragen und als Datei mit der Endung `.env` gespeichert. Befindet sich die Datei an einem anderen Ort, kann im Skript optional der Pfad und der Dateiname angepasst werden. 
+Befindet sich im Docker-Projekt-Verzeichnis von Paperless-ngx eine ENV-Datei, wird diese ins lokale Datensicherungsziel übertragen und als Datei mit der Endung `.env` gespeichert.
 
 - **Anpassen der Ordner- und Dateirechte im Sicherungsziel**  
 Abschließend werden die Ordner- und Dateirechte im Datensicherungsziel noch an die angegebenen Benutzer- und Gruppenrechte des Paperless-ngx-Verzeichnisses angepasst.
 
-- **Erstellen einer gepackten .tgz Archivdatei (Bei Bedarf)**  
-Nachdem alle o.a. Sicherungen durchgeführt wurden, wird bei Bedarf eine gepackte .tgz-Archivdatei, benannt nach dem aktuellen Datum und der Uhrzeit in einem Unterverzeichnis des Datensicherungsziels abgelegt. Ältere Archivdateien bzw. Versionsstände werden aus dem Unterverzeichnis gelöscht, sobald eine angegebene Zeit in Tagen überschritten wurde.
+- **Erstellen von Versionen (Bei Bedarf)**  
+Wird eine Datensicherung mit Versionsständen verwendet, werden im Datensicherungsziel Versionsordner im Format "YYYY-MM-DDTHH-MM-SS" angelegt. Versionsordner werden nach Ablauf einer vom Benutzer festgelegten Zeit in Tagen automatisch aus dem Datensicherungsziel gelöscht.
 
 ## Installationshinweise
 Mit Hilfe des Kommandozeilenprogramms `curl` kann die Shell-Skript-Datei **Paperless-ngx-Backup-Script.sh** einfach über ein Terminalprogramm deiner Wahl heruntergeladen werden. Als Speicherort bietet sich das eigene Benutzer-Home-Verzeichnis an, es kann jedoch auch jedes andere erreichbare Verzeichnis verwendet werden. Wechsle in das von dir gewählte Verzeichnis. Führe dann den folgenden Befehl aus. Damit wird die Skriptdatei in das ausgewählte Verzeichnis heruntergeladen.
@@ -101,7 +101,6 @@ Die integrierte Exportfunktion von Paperless-ngx wird ausgeführt. Bitte warten.
  - Die PostgreSQL-Datenbank wurde in der Datei [ postgres-dump.sql ] gesichert.
  - Die YAML-Datei [ docker-compose.yaml ] wurde gesichert.
  - Die Ordner- und Dateirechte im Datensicherungsziel wurden auf [ tommes:admin ] gesetzt.
- - Es wird eine gepackte Sicherungskopie im Unterverzeichnis [ ./history ] abgelegt. Bitte warten...
  - Versionsstände, die älter als [ 30 ] Tag(e) sind, werden gelöscht.
 
 ---------------------------------------------------------------------------------------------------------
