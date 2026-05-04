@@ -1,5 +1,9 @@
 Paperless-ngx Backup-Script Release Notes
 
+Version 1.0-500 vom 04.05.2026
+ - Das im docker-Befehl [ docker exec -T ] bzw. [ docker compose exec -T ] enthaltene -T Flag löste unter gewissen Umständen einen Fehler aus, daher wurde das Flag wieder entfernt.
+  
+
 Version 1.0-400 vom 18.04.2026
  - Das Skript wurde komplett überarbeitet. 
  - Alle verbindlichen, benutzerspezifischen Angaben bzw. Variablen müssen daher neu festgelegt werden.

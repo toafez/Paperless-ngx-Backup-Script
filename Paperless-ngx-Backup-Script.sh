@@ -1,6 +1,6 @@
 #!/bin/bash
 # Filename: Paperless-ngx-Backup-Script.sh - coded in utf-8
-version="1.0-400"
+version="1.0-500"
 
 
 #             Backupskript für Paperless-ngx
@@ -116,9 +116,9 @@ if [[ -d "${backup_dir}" ]]; then
 
         # Prüfe, ob Paperless-ngx über den Service- oder den Containernamen erreichbar ist, und passe den Docker-Befehl entsprechend an
         if cd "${project_dir}" 2>/dev/null && [[ -n "$(docker compose ps --status running -q "${project_service_name}")" ]]; then
-            docker_command="docker compose exec -T ${project_service_name}"
+            docker_command="docker compose exec ${project_service_name}"
         elif docker inspect -f '{{.State.Running}}' -- "${project_container_name}" 2>/dev/null | grep -q '^true$'; then
-            docker_command="docker exec -T ${project_container_name}"
+            docker_command="docker exec ${project_container_name}"
         else
             docker_command=
         fi
@@ -165,9 +165,9 @@ if [[ -d "${backup_dir}" ]]; then
 
         # Prüfe, ob PostgreSQL über den Service- oder den Containernamen erreichbar ist, und passe den Docker-Befehl entsprechend an
         if cd "${project_dir}" 2>/dev/null && [[ -n "$(docker compose ps --status running -q "${postgres_service_name}")" ]]; then
-            docker_command="docker compose exec -T ${postgres_service_name}"
+            docker_command="docker compose exec ${postgres_service_name}"
         elif docker inspect -f '{{.State.Running}}' -- "${postgres_container_name}" 2>/dev/null | grep -q '^true$'; then
-            docker_command="docker exec -T ${postgres_container_name}"
+            docker_command="docker exec ${postgres_container_name}"
         else
             docker_command=
         fi
